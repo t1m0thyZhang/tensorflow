@@ -95,7 +95,7 @@ def train(mnist):
             session.run(train_op, feed_dict={x: xs, y_: ys})
 
         test_acc = session.run(accuracy, feed_dict=test_feed)
-        print('testing accuracy is %g' % (TRAINING_STEP, test_acc))
+        print('testing accuracy is %g' % (test_acc))
 
 
 def main():
