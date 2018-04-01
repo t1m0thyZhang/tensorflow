@@ -19,7 +19,8 @@ def train():
         # saver.save(session, dir)
         # 第二次直接使用即可
         saver.restore(session, dir)
-        print(session.run(result))
+        # tensorboard绘制计算图模型
+        tf.summary.FileWriter('logs', session.graph)
 
 
 def main():

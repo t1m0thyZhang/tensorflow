@@ -79,23 +79,30 @@ def train(mnist):
         train_op = tf.no_op(name='train')
 
     # 计算准确率
-    correction_prediction = tf.equal(tf.argmax(average_y, 1), tf.argmax(y_, 1))
+    correction_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correction_prediction, tf.float32))
+
+    # 保存训练结果
+    saver = tf.train.Saver()
 
     # 开始训练
     with tf.Session() as session:
         session.run(tf.global_variables_initializer())
-        validate_feed = {x: mnist.validation.images, y_: mnist.validation.labels}
+        train_feed = {x: mnist.train.images, y_: mnist.train.labels}
         test_feed = {x: mnist.test.images, y_: mnist.test.labels}
         for i in range(TRAINING_STEP):
             if i % 1000 == 0:
-                validate_acc = session.run(accuracy, feed_dict=validate_feed)
+                validate_acc = session.run(accuracy, feed_dict=train_feed)
                 print('after training for %d steps, training accuracy is %g' % (i + 1000, validate_acc))
             xs, ys = mnist.train.next_batch(BATCH_SIZE)
             session.run(train_op, feed_dict={x: xs, y_: ys})
 
+        save_dir = 'result/mnist_nn.ckpt'
+        # saver.save(session, save_dir)  # 保存训练结果
+        # saver.restore(session, save_dir)  # 恢复上次的训练结果
         test_acc = session.run(accuracy, feed_dict=test_feed)
-        print('testing accuracy is %g' % (test_acc))
+        print('testing accuracy is %g' % test_acc)
+        tf.summary.FileWriter('nn_logs', session.graph)
 
 
 def main():
